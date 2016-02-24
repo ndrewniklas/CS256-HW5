@@ -1,3 +1,7 @@
+//Andrew Niklas
+//Homework 5
+//Completed
+
 #include <cmath>
 #include <cstdlib>
 #include <ctime>

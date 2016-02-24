@@ -1,3 +1,7 @@
+//Andrew Niklas
+//Homework 5
+//Completed
+
 #ifndef GAME_H
 #define	GAME_H
 
