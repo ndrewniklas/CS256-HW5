@@ -120,11 +120,11 @@ void Game::update(double dt)
     std::cout << dt << " sec since last frame.\n";
 
     // Replace with your game logic!
-	for(const Particle& p1 : particles){
-		for(const Particle& p2 : particles){
-			//p1.v
-		}
-	}
+	// for(const Particle& p1 : particles){
+		// for(const Particle& p2 : particles){
+			// p1.v
+		// }
+	// }
 }
 
 void Game::render()

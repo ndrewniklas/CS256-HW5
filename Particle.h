@@ -6,13 +6,15 @@
 #define	PARTICLE_H
 
 #include "Point.h"
+#include "Constants.h"
 class Particle
 {
 private:
 	Point position;
 	Point velocity;
 	double mass;
-	double radius = 5;
+	double radius;
+	double setRadius();
 	
 public:
 	Particle(Point pos, double mass);
