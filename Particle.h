@@ -12,7 +12,7 @@ private:
 	Point position;
 	Point velocity;
 	double mass;
-	double radius;
+	double radius = 5;
 	
 public:
 	Particle(Point pos, double mass);
