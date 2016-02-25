@@ -31,3 +31,13 @@ double Particle::getMass() const{
 double Particle::getRadius() const{
 	return radius;
 }
+
+void Particle::updateVelocity(Point a, double dt){
+	velocity.x = velocity.x + a.x * dt;
+	velocity.y = velocity.y + a.y * dt;
+}
+
+void Particle::updatePos(Point a, double dt){
+	position.x += velocity.x * dt + (0.5 * a.x * (dt * dt));
+	position.y += velocity.y * dt + (0.5 * a.y * (dt * dt));
+}

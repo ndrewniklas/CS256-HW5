@@ -23,6 +23,9 @@ public:
 	double getMass() const;
 	double getRadius() const;
 	
+	void updateVelocity(Point accel, double time);
+	void updatePos(Point accel, double dt);
+	
 };
 
 #endif
