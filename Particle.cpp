@@ -3,6 +3,7 @@
 //Completed
 
 #include "Particle.h"
+#include <iostream>
 
 
 Particle::Particle(Point pos, double m)
@@ -38,6 +39,12 @@ void Particle::updateVelocity(Point a, double dt){
 }
 
 void Particle::updatePos(Point a, double dt){
-	position.x += velocity.x * dt + (0.5 * a.x * (dt * dt));
-	position.y += velocity.y * dt + (0.5 * a.y * (dt * dt));
+	std::cout << "x0 = " << position.x << std::endl;
+	std::cout << "y0 = " << position.y << std::endl;
+	double n = 0.5;
+	position.x += velocity.x * dt + (n * a.x * (dt * dt));
+	position.y += velocity.y * dt + (n * a.y * (dt * dt));
+	
+	std::cout << "x = " << position.x << std::endl;
+	std::cout << "y = " << position.y << std::endl;
 }
