@@ -2,7 +2,7 @@
 #define CONSTANTS_H
 
 const double PI = 3.14159265358979323846264338;
-//const double G = 6.674e-11;
+// const double G = 6.674e-11;
 const double G = 6.674e-15;
 
 const int DEFAULT_WIDTH = 800;

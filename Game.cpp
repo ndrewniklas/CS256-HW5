@@ -155,35 +155,52 @@ void Game::update(double dt)
 {
 	std::cout << dt << " sec since last frame.\n";
 
+	//point to hold acceleration
 	Point a;
 	
+	
 	// Replace with your game logic!
+	int i = 0;
 	for(Particle& p1 : particles){
+		int j = 0;
 		for(Particle& p2 : particles){
 			if(&p1 != &p2){
-				a = calcGrav(p1, p2);
+				a = calcGrav(p1, p2, i, j);
 				p1.updateVelocity(a, dt);
-				
-				//collision check using 2D bool array
+			}
+			++j;
+		}
+		++i;
+	}
+	//check if at edge of window
+	for(Particle& p : particles){
+		boundaryChk(p);
+	}
+	//collision check using 2D bool array
+	for(int i = 0; i < particles.size(); ++i){
+		for(int j = 0; j < particles.size(); ++j){
+			if(colliding[i][j]){
+				collideCalc(particles[i], particles[j]);
 			}
 		}
 	}
+	//update position based on new velocity given dt
 	for(Particle& p : particles){
-		//check if at edge of window
-		boundaryChk(p);
-	}
-	
-	for(Particle& p : particles){		
-		// update position based on new velocity given dt
 		p.updatePos(a, dt);
 	}
+	
 }
 
-Point Game::calcGrav(Particle& p1, const Particle& p2){
+Point Game::calcGrav(Particle& p1, const Particle& p2, const int i, const int j){
 	Point pt1 = p1.getPos();
 	Point pt2 = p2.getPos();
 	
 	double r = pt1.distance(pt2);
+	if(r <= p1.getRadius() + p2.getRadius()){
+		colliding[i][j] = true;
+	}else{
+		colliding[i][j] = false;
+	}
 	double accel = G * (p2.getMass() / r * r);
 	
 	double angle = atan2(pt1.xDiff(pt2), pt1.yDiff(pt2));
@@ -198,6 +215,10 @@ void Game::boundaryChk(Particle& p){
 	if(p.getPos().getY() + r >= height || p.getPos().getY() - r <= 0){
 		p.negateVelocity('y');
 	}
+}
+
+void Game::collideCalc(Particle& p1, Particle& p2){
+	// std::cout << "B O O M" << std::endl;
 }
 
 void Game::render()

@@ -53,9 +53,11 @@ private:
 	Particle randomParticle() const;
 	
 	// helper function for calculating acceleration due to gravity
-	Point calcGrav(Particle& p1, const Particle& p2);
+	Point calcGrav(Particle& p1, const Particle& p2, const int i, const int j);
 	
 	void boundaryChk(Particle& p);
+	bool colliding[PARTICLE_COUNT][PARTICLE_COUNT];
+	void collideCalc(Particle& p1, Particle& p2);
 	
 	
 public:
