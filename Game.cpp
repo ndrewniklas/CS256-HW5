@@ -191,7 +191,13 @@ Point Game::calcGrav(Particle& p1, const Particle& p2){
 }
 
 void Game::boundaryChk(Particle& p){
-	if(p.getPos().
+	double r = p.getRadius();
+	if(p.getPos().getX() - r <= 0 || p.getPos().getX() + r >= width){
+		p.negateVelocity('x');
+	}
+	if(p.getPos().getY() + r >= height || p.getPos().getY() - r <= 0){
+		p.negateVelocity('y');
+	}
 }
 
 void Game::render()

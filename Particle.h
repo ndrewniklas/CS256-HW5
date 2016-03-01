@@ -25,7 +25,7 @@ public:
 	
 	void updateVelocity(Point accel, double time);
 	void updatePos(Point accel, double dt);
-	
+	void negateVelocity(char component);
 };
 
 #endif
