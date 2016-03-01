@@ -160,12 +160,20 @@ void Game::update(double dt)
 	// Replace with your game logic!
 	for(Particle& p1 : particles){
 		for(Particle& p2 : particles){
-			a = calcGrav(p1, p2);
-			p1.updateVelocity(a, dt);
+			if(&p1 != &p2){
+				a = calcGrav(p1, p2);
+				p1.updateVelocity(a, dt);
+				
+				//collision check using 2D bool array
+			}
 		}
 	}
-	
 	for(Particle& p : particles){
+		//check if at edge of window
+		boundaryChk(p);
+	}
+	
+	for(Particle& p : particles){		
 		// update position based on new velocity given dt
 		p.updatePos(a, dt);
 	}
@@ -180,6 +188,10 @@ Point Game::calcGrav(Particle& p1, const Particle& p2){
 	
 	double angle = atan2(pt1.xDiff(pt2), pt1.yDiff(pt2));
 	return Point(accel * cos(angle), accel * sin(angle));	
+}
+
+void Game::boundaryChk(Particle& p){
+	if(p.getPos().
 }
 
 void Game::render()

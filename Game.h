@@ -55,6 +55,8 @@ private:
 	// helper function for calculating acceleration due to gravity
 	Point calcGrav(Particle& p1, const Particle& p2);
 	
+	void boundaryChk(Particle& p);
+	
 	
 public:
 	// This will act as our initialize function
