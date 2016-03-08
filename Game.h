@@ -29,6 +29,11 @@ private:
 	bool good;
 	bool running;
 	
+	// for extras
+	bool showStats;
+	double collisions;
+	int runTime;
+	
 	// SDL managed
 	SDL_Window* window;
 	SDL_Renderer* renderer;
@@ -59,6 +64,7 @@ private:
 	bool colliding[PARTICLE_COUNT][PARTICLE_COUNT];
 	void collideCalc(Particle& p1, Particle& p2);
 	
+	void stats() const;
 	
 public:
 	// This will act as our initialize function

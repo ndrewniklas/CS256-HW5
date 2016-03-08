@@ -6,12 +6,14 @@
 #include <cstdlib>
 #include <ctime>
 
+// #include "SDL_TTF.h"
 #include "Game.h"
 
 Game::Game() 
 	: width(DEFAULT_WIDTH), height(DEFAULT_HEIGHT), 
 	  start(0), last(0), current(0), 
 	  good(true), running(false), 
+	  showStats(false), collisions(0), runTime(0),
 	  particles(std::vector<Particle>())
 {
 	// Seed the random number generator
@@ -62,6 +64,9 @@ Game::Game()
 	{
 		particles.push_back(randomParticle());
 	}
+	
+	// initialize text printing
+	// TTF_Init();
 }
 
 Game::~Game()
@@ -82,6 +87,8 @@ Game::~Game()
 	{
 		SDL_DestroyWindow(window);
 	}
+	// TTF_Quit();
+	
 	SDL_Quit();
 }
 
@@ -109,42 +116,6 @@ int Game::operator()()
 		update((current - last) / 1000.0);
 		render();
 		last = current;
-	}
-
-	return 0;
-}
-
-int Game::operator()(int n)
-{
-	if (!good)
-	{
-		return -1;
-	}
-	running = true;
-	SDL_Event event;
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	SDL_RenderClear(renderer);
-	SDL_RenderPresent(renderer);
-	start = SDL_GetTicks();
-	last = start;
-
-	char step;
-	while (running){
-		std::cin >> step;
-		if(step == 'n') // every iteration is 1 frame
-		{
-			current = SDL_GetTicks();
-			while (SDL_PollEvent(&event))
-			{
-				handleEvent(event);
-			}
-			update((current - last) / 1000.0);
-			render();
-			last = current;
-		}else if (step == 'q'){
-			running = false;
-			return (1);
-		}
 	}
 
 	return 0;
@@ -188,7 +159,8 @@ void Game::update(double dt)
 	}
 	//update position based on new velocity given dt
 	for(Particle& p : particles){
-		p.updatePos(a, dt);
+		p.updatePos(dt);
+		std::cout << p.velocityMagnitude() << std::endl;
 	}
 	
 }
@@ -200,12 +172,13 @@ Point Game::calcGrav(Particle& p1, const Particle& p2, const int i, const int j)
 	double r = pt1.distance(pt2);
 	if(r <= p1.getRadius() + p2.getRadius()){
 		colliding[i][j] = true;
+		return Point(0, 0);
 	}else{
 		colliding[i][j] = false;
 	}
-	double accel = G * (p2.getMass() / r * r);
+	double accel = G * (p2.getMass() / (r * r));
 	
-	double angle = atan2(pt1.xDiff(pt2), pt1.yDiff(pt2));
+	double angle = atan2(pt1.yDiff(pt2), pt1.xDiff(pt2));
 	return Point(accel * cos(angle), accel * sin(angle));	
 }
 
@@ -220,6 +193,7 @@ void Game::boundaryChk(Particle& p){
 }
 
 void Game::collideCalc(Particle& p1, Particle& p2){
+	++collisions;
 	// std::cout << "B O O M" << std::endl;
 	double v1 = p1.velocityMagnitude();
 	double v2 = p2.velocityMagnitude();
@@ -231,14 +205,14 @@ void Game::collideCalc(Particle& p1, Particle& p2){
 	double dx = p1.getPos().xDiff(p2.getPos());
 	double phi = atan2(dy, dx);
 	// v1 calculations
-	double v1Sub = (v1 * cos(v1Angle - phi) * (m1 - m2) + 2 * m2 * v2 * cos(v2Angle - phi)) / (m1 + m2);
+	double v1Sub = (v1 * cos(v1Angle - phi) * (m1 - m2) + (2 * m2 * v2 * cos(v2Angle - phi))) / (m1 + m2);
 	
 	double v1x = v1Sub * (cos(phi) + v1 * sin(v1Angle - phi) * cos(phi + PI/2));
 	
 	double v1y = v1Sub * (sin(phi) + v1 * sin(v1Angle - phi) * sin(phi + PI/2));
 	
 	// v2 calculations
-	double v2Sub = (v2 * cos(v2Angle - phi) * (m2 - m1) + 2 * m1 * v1 * cos(v1Angle - phi)) / (m1 + m2);
+	double v2Sub = (v2 * cos(v2Angle - phi) * (m2 - m1) + (2 * m1 * v1 * cos(v1Angle - phi))) / (m1 + m2);
 	
 	double v2x = v2Sub * (cos(phi) + v2 * sin(v2Angle - phi) * cos(phi + PI/2));
 	
@@ -261,6 +235,10 @@ void Game::render()
 	}
 	
 	// rendering here would place objects on top of the particles
+	// if(showStats){
+		
+		// printStats(renderer, getStats(), 0, 0);
+	// }
 	
 	SDL_RenderPresent(renderer);
 }
@@ -276,6 +254,8 @@ void Game::handleEvent(const SDL_Event& event)
 	case SDL_KEYUP:
 		if(event.key.keysym.sym == SDLK_ESCAPE){
 			running = false;
+		}else if(event.key.keysym.sym == SDLK_s){
+			showStats = true;
 		}
 	default:
 		break;
@@ -302,3 +282,31 @@ Particle Game::randomParticle() const
 	
 	return Particle(pos, mass);
 }
+
+// void Game::printStats(SDL_Surface* screen, char* string, int x, int y){
+	
+	// TTF_Font* font = TTF_OpenFont("arial.TTF", 12);
+	// SDL_Color foregroundColor = { 255, 255, 255 };
+	// SDL_Color backgroundColor = { 0, 0, 0 };
+	// SDL_Surface* textSurface = TTF_RenderText_Shaded(font, string, foregroundColor, backgroundColor);
+	// SDL_Rect textLocation = { x, y, 0, 0 };
+	// SDL_BlitSurface(textSurface, NULL, screen, &textLocation);
+	
+	// SDL_FreeSurface(textSurface);
+	// TTF_CloseFont(font);
+// }
+
+// char* Game::getStats(){
+	// std::stringstream ss;
+	// ss << "  Statistics  \n";
+	// ss << "Collisions: " << collisions << "\n";
+	// ss << "Run Time: " << SDL_GetTicks() << "\n";
+	// ss << "\0";
+	// char* string;
+	// ss.get(string, 500, "\0");
+	// return string;
+// }
+
+
+
+

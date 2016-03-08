@@ -43,15 +43,9 @@ void Particle::updateVelocity(double x, double y){
 	velocity.y = y;
 }
 
-void Particle::updatePos(Point a, double dt){
-	// std::cout << "x0 = " << position.x << std::endl;
-	// std::cout << "y0 = " << position.y << std::endl;
-	double n = 0.5;
-	position.x += velocity.x * dt + (n * a.x * (dt * dt));
-	position.y += velocity.y * dt + (n * a.y * (dt * dt));
-	
-	// std::cout << "x = " << position.x << std::endl;
-	// std::cout << "y = " << position.y << std::endl;
+void Particle::updatePos(double dt){
+	position.x += velocity.x * dt;
+	position.y += velocity.y * dt;
 }
 
 void Particle::negateVelocity(char component){

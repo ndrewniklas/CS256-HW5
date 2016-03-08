@@ -7,9 +7,6 @@
 int main(int argc, char** argv)
 {
 	Game game;
-	if(argc > 1){
-		// int n = 1;
-		return game(1);
-	}
+	
 	return game();
 }
