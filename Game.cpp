@@ -181,6 +181,8 @@ void Game::update(double dt)
 		for(int j = 0; j < particles.size(); ++j){
 			if(colliding[i][j]){
 				collideCalc(particles[i], particles[j]);
+				colliding[i][j] = false;
+				colliding[j][i] = false;
 			}
 		}
 	}
@@ -219,6 +221,32 @@ void Game::boundaryChk(Particle& p){
 
 void Game::collideCalc(Particle& p1, Particle& p2){
 	// std::cout << "B O O M" << std::endl;
+	double v1 = p1.velocityMagnitude();
+	double v2 = p2.velocityMagnitude();
+	double m1 = p1.getMass();
+	double m2 = p2.getMass();
+	double v1Angle = p1.velocityAngle();
+	double v2Angle = p2.velocityAngle();
+	double dy = p1.getPos().yDiff(p2.getPos());
+	double dx = p1.getPos().xDiff(p2.getPos());
+	double phi = atan2(dy, dx);
+	// v1 calculations
+	double v1Sub = (v1 * cos(v1Angle - phi) * (m1 - m2) + 2 * m2 * v2 * cos(v2Angle - phi)) / (m1 + m2);
+	
+	double v1x = v1Sub * (cos(phi) + v1 * sin(v1Angle - phi) * cos(phi + PI/2));
+	
+	double v1y = v1Sub * (sin(phi) + v1 * sin(v1Angle - phi) * sin(phi + PI/2));
+	
+	// v2 calculations
+	double v2Sub = (v2 * cos(v2Angle - phi) * (m2 - m1) + 2 * m1 * v1 * cos(v1Angle - phi)) / (m1 + m2);
+	
+	double v2x = v2Sub * (cos(phi) + v2 * sin(v2Angle - phi) * cos(phi + PI/2));
+	
+	double v2y = v2Sub * (sin(phi) + v2 * sin(v2Angle - phi) * sin(phi + PI/2));
+	
+	// update velocities
+	p1.updateVelocity(v1x, v1y);
+	p2.updateVelocity(v2x, v2y);
 }
 
 void Game::render()

@@ -24,8 +24,11 @@ public:
 	double getRadius() const;
 	
 	void updateVelocity(Point accel, double time);
+	void updateVelocity(double x, double y);
 	void updatePos(Point accel, double dt);
 	void negateVelocity(char component);
+	double velocityMagnitude() const;
+	double velocityAngle() const;
 };
 
 #endif

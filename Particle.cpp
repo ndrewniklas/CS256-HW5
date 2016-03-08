@@ -38,6 +38,11 @@ void Particle::updateVelocity(Point a, double dt){
 	velocity.y = velocity.y + a.y * dt;
 }
 
+void Particle::updateVelocity(double x, double y){
+	velocity.x = x;
+	velocity.y = y;
+}
+
 void Particle::updatePos(Point a, double dt){
 	// std::cout << "x0 = " << position.x << std::endl;
 	// std::cout << "y0 = " << position.y << std::endl;
@@ -55,6 +60,14 @@ void Particle::negateVelocity(char component){
 	}else if(component == 'y'){
 		velocity.y = -velocity.y;
 	}
+}
+
+double Particle::velocityMagnitude() const{
+	return sqrt((velocity.x * velocity.x) + (velocity.y * velocity.y));
+}
+
+double Particle::velocityAngle() const{
+	return atan2(velocity.y, velocity.x);
 }
 
 
