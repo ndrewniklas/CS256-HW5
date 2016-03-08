@@ -33,6 +33,7 @@ private:
 	bool showStats;
 	double collisions;
 	int runTime;
+	double maxVelocity;
 	
 	// SDL managed
 	SDL_Window* window;

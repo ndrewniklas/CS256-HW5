@@ -13,7 +13,7 @@ Game::Game()
 	: width(DEFAULT_WIDTH), height(DEFAULT_HEIGHT), 
 	  start(0), last(0), current(0), 
 	  good(true), running(false), 
-	  showStats(false), collisions(0), runTime(0),
+	  showStats(false), collisions(0), runTime(0), maxVelocity(0),
 	  particles(std::vector<Particle>())
 {
 	// Seed the random number generator
@@ -117,6 +117,9 @@ int Game::operator()()
 		render();
 		last = current;
 	}
+	std::cout << "\n\n  End of Game Statistics  " << std::endl;
+	std::cout << "Collisions: " << collisions << std::endl;
+	std::cout << "Max Velocity: " << maxVelocity << std::endl;
 
 	return 0;
 }
@@ -159,6 +162,9 @@ void Game::update(double dt)
 	}
 	//update position based on new velocity given dt
 	for(Particle& p : particles){
+		if(p.velocityMagnitude() > maxVelocity){
+			maxVelocity = p.velocityMagnitude();
+		}
 		p.updatePos(dt);
 		std::cout << p.velocityMagnitude() << std::endl;
 	}
