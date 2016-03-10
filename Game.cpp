@@ -68,6 +68,8 @@ Game::Game()
 	
 	// initialize text printing
 	TTF_Init();
+	TTF_Font* font = TTF_OpenFont("arial.ttf", 12);
+	SDL_Color textColor = { 255, 255, 255 };
 }
 
 Game::~Game()
@@ -88,6 +90,8 @@ Game::~Game()
 	{
 		SDL_DestroyWindow(window);
 	}
+	TTF_CloseFont(font);
+    font = NULL;
 	TTF_Quit();
 	
 	SDL_Quit();
@@ -184,7 +188,7 @@ Point Game::calcGrav(Particle& p1, Particle& p2, const int i, const int j){
 		double radiSum = p1.getRadius() + p2.getRadius();
 		double overlap = radiSum - r;
 		double angle = atan2(pt1.yDiff(pt2), pt1.xDiff(pt2));
-		p1.fixPos((overlap/2), angle);
+		p1.fixPos((overlap/2), angle - PI);
 		p2.fixPos((overlap/2), angle);
 		
 		return Point(0, 0);
@@ -199,10 +203,20 @@ Point Game::calcGrav(Particle& p1, Particle& p2, const int i, const int j){
 
 void Game::boundaryChk(Particle& p){
 	double r = p.getRadius();
-	if(p.getPos().getX() - r <= 0 || p.getPos().getX() + r >= width){
+	if(p.getPos().getX() - r <= 0){
+		p.fixPos(p.getRadius() - 1, 0);
 		p.negateVelocity('x');
 	}
-	if(p.getPos().getY() + r >= height || p.getPos().getY() - r <= 0){
+	if(p.getPos().getX() + r >= width){
+		p.fixPos(p.getRadius() - 1, PI);
+		p.negateVelocity('x');
+	}
+	if(p.getPos().getY() + r >= height){
+		p.fixPos(p.getRadius() - 1, -PI/2);
+		p.negateVelocity('y');
+	}
+	if(p.getPos().getY() - r <= 0){
+		p.fixPos(p.getRadius() - 1, PI/2);
 		p.negateVelocity('y');
 	}
 }
@@ -255,7 +269,7 @@ void Game::render()
 		
 		// printStats(getStats());
 		std::string test = "This is a test!";
-		printStats(test);
+		printStats(font, test, textColor);
 	}
 	
 	SDL_RenderPresent(renderer);
@@ -302,18 +316,21 @@ Particle Game::randomParticle() const
 	return Particle(pos, mass);
 }
 
-void Game::printStats(std::string text){
+void Game::printStats(TTF_Font* font, std::string text, SDL_Color& textColor){
 	
-	TTF_Font* font = TTF_OpenFont("arial.TTF", 12);
 	std::cout << "loaded font" << std::endl;
+	std::cout << (font == NULL ? "null" : "not null") << std::endl;
 	
-	SDL_Color White = { 255, 255, 255 };
+	// SDL_Color White = { 255, 255, 255 };
 	std::cout << "set color" << std::endl;
 	
-	SDL_Surface* SurfaceMessage = TTF_RenderText_Solid(font, text.c_str(), White);
+	SDL_Surface* textSurface; 
+	if(!(textSurface = TTF_RenderText_Solid(font, "text.c_str()", textColor))){
+		std::cout << TTF_GetError() << std::endl;
+	}
 	std::cout << "created Surface Message" << std::endl;
 	
-	SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, SurfaceMessage);
+	SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, textSurface);
 	std::cout << "created texture" << std::endl;
 	
 	SDL_Rect Message_rect; //create a rect
@@ -323,12 +340,12 @@ void Game::printStats(std::string text){
 	Message_rect.y = 0; // DEFAULT_HEIGHT + 100; // controls the rect's y coordinte
 	std::cout << "created rect" << std::endl;
 	
-	SDL_FreeSurface(SurfaceMessage);
+	SDL_FreeSurface(textSurface);
 	
 	SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
 	//renderer's name, the Message, crop size, rect which is the size and coordinate of your texture
 	std::cout << "render copy" << std::endl;
-	
+
 	SDL_DestroyTexture(Message);
 }
 
