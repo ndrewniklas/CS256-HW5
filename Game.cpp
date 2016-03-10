@@ -122,11 +122,11 @@ int Game::operator()()
 		render();
 		last = current;
 	}
-	//runTime = (SDL_GetTicks() - start) / 1000.0;
-	//std::cout << "\n\n  End of Game Statistics  " << std::endl;
-	//std::cout << "Collisions: " << collisions << std::endl;
-	//std::cout << "Max Velocity: " << maxVelocity << std::endl;
-	//std::cout << "Run time: " << runTime << " seconds" << std::endl;
+	runTime = (SDL_GetTicks() - start) / 1000.0;
+	std::cout << "\n\n  End of Game Statistics  " << std::endl;
+	std::cout << "Collisions: " << collisions << std::endl;
+	std::cout << "Max Velocity: " << maxVelocity << std::endl;
+	std::cout << "Run time: " << runTime << " seconds" << std::endl;
 
 	return 0;
 }
@@ -203,20 +203,24 @@ Point Game::calcGrav(Particle& p1, Particle& p2, const int i, const int j){
 
 void Game::boundaryChk(Particle& p){
 	double r = p.getRadius();
+	//left wall
 	if(p.getPos().getX() - r <= 0){
-		p.fixPos(p.getRadius() - 1, 0);
+		p.fixPos(p.getRadius() / 2, 0);
 		p.negateVelocity('x');
 	}
+	//right wall
 	if(p.getPos().getX() + r >= width){
-		p.fixPos(p.getRadius() - 1, PI);
+		p.fixPos(p.getRadius() / 2, PI);
 		p.negateVelocity('x');
 	}
+	// top wall
 	if(p.getPos().getY() + r >= height){
-		p.fixPos(p.getRadius() - 1, -PI/2);
+		p.fixPos(p.getRadius() / 2, -PI/2);
 		p.negateVelocity('y');
 	}
+	// bottom wall
 	if(p.getPos().getY() - r <= 0){
-		p.fixPos(p.getRadius() - 1, PI/2);
+		p.fixPos(p.getRadius() / 2, PI/2);
 		p.negateVelocity('y');
 	}
 }
@@ -346,7 +350,7 @@ void Game::printStats(TTF_Font* font, std::string text, SDL_Color& textColor){
 	//renderer's name, the Message, crop size, rect which is the size and coordinate of your texture
 	std::cout << "render copy" << std::endl;
 
-	SDL_DestroyTexture(Message);
+	// SDL_DestroyTexture(Message);
 }
 
 std::string Game::getStats(){
