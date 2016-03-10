@@ -220,6 +220,7 @@ void Game::collideCalc(Particle& p1, Particle& p2){
 	double v1y = (v1Sub * sin(phi)) + (v1 * sin(v1Angle - phi) * sin(phi + PI/2));
 	
 	// v2 calculations
+	phi += PI;
 	double v2Sub = (v2 * cos(v2Angle - phi) * (m2 - m1) + (2 * m1 * v1 * cos(v1Angle - phi))) / (m1 + m2);
 	
 	double v2x = (v2Sub * cos(phi)) + (v2 * sin(v2Angle - phi) * cos(phi + PI/2));
