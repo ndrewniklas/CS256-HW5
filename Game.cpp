@@ -67,7 +67,11 @@ Game::Game()
 	}
 	
 	// initialize text printing
-	TTF_Init();
+	if(!TTF_Init()){
+		std::cout << "TTF_Init() Failed" << std::endl;
+		std::cout << "SDL Error: " << SDL_GetError() << std::endl;
+		good = false;
+	}
 	TTF_Font* font = TTF_OpenFont("arial.ttf", 12);
 	SDL_Color textColor = { 255, 255, 255 };
 }
@@ -90,8 +94,10 @@ Game::~Game()
 	{
 		SDL_DestroyWindow(window);
 	}
-	TTF_CloseFont(font);
-    font = NULL;
+	if (font != NULL){
+		TTF_CloseFont(font);
+		font = NULL;
+	}
 	TTF_Quit();
 	
 	SDL_Quit();
@@ -273,7 +279,7 @@ void Game::render()
 		
 		// printStats(getStats());
 		std::string test = "This is a test!";
-		printStats(font, test, textColor);
+		printStats(test);
 	}
 	
 	SDL_RenderPresent(renderer);
@@ -320,7 +326,7 @@ Particle Game::randomParticle() const
 	return Particle(pos, mass);
 }
 
-void Game::printStats(TTF_Font* font, std::string text, SDL_Color& textColor){
+void Game::printStats(std::string text){
 	
 	std::cout << "loaded font" << std::endl;
 	std::cout << (font == NULL ? "null" : "not null") << std::endl;
@@ -330,6 +336,7 @@ void Game::printStats(TTF_Font* font, std::string text, SDL_Color& textColor){
 	
 	SDL_Surface* textSurface; 
 	if(!(textSurface = TTF_RenderText_Solid(font, "text.c_str()", textColor))){
+		std::cout << "TTF_RenderText_Solid failed" << std::endl;
 		std::cout << TTF_GetError() << std::endl;
 	}
 	std::cout << "created Surface Message" << std::endl;

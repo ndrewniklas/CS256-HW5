@@ -69,7 +69,7 @@ private:
 	TTF_Font* font;
 	SDL_Color textColor;
 	std::string getStats();
-	void printStats(TTF_Font* font, std::string string, SDL_Color& textColor);
+	void printStats(std::string string);
 	
 public:
 	// This will act as our initialize function
