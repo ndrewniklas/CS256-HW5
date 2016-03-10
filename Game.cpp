@@ -118,11 +118,11 @@ int Game::operator()()
 		render();
 		last = current;
 	}
-	runTime = (SDL_GetTicks() - start) / 1000.0;
-	std::cout << "\n\n  End of Game Statistics  " << std::endl;
-	std::cout << "Collisions: " << collisions << std::endl;
-	std::cout << "Max Velocity: " << maxVelocity << std::endl;
-	std::cout << "Run time: " << runTime << " seconds" << std::endl;
+	//runTime = (SDL_GetTicks() - start) / 1000.0;
+	//std::cout << "\n\n  End of Game Statistics  " << std::endl;
+	//std::cout << "Collisions: " << collisions << std::endl;
+	//std::cout << "Max Velocity: " << maxVelocity << std::endl;
+	//std::cout << "Run time: " << runTime << " seconds" << std::endl;
 
 	return 0;
 }
@@ -243,10 +243,10 @@ void Game::render()
 	}
 	
 	// rendering here would place objects on top of the particles
-	// if(showStats){
+	if(showStats){
 		
 		printStats(getStats());
-	// }
+	}
 	
 	SDL_RenderPresent(renderer);
 }
@@ -298,18 +298,19 @@ void Game::printStats(std::string text){
 	SDL_Color White = { 255, 255, 255 };
 	
 	SDL_Surface* SurfaceMessage = TTF_RenderText_Solid(font, text.c_str(), White);
-
-	SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, SurfaceMessage); //now you can convert it into a texture
-
+	
+	SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, SurfaceMessage);
+	
 	SDL_Rect Message_rect; //create a rect
 	Message_rect.w = 100; // controls the width of the rect
 	Message_rect.h = 100; // controls the height of the rect
-	Message_rect.x = DEFAULT_WIDTH - 100;  //controls the rect's x coordinate 
-	Message_rect.y = DEFAULT_HEIGHT + 100; // controls the rect's y coordinte
+	Message_rect.x = 0; // DEFAULT_WIDTH - 100;  //controls the rect's x coordinate 
+	Message_rect.y = 0; // DEFAULT_HEIGHT + 100; // controls the rect's y coordinte
 	
 	SDL_FreeSurface(SurfaceMessage);
 	
-	SDL_RenderCopy(renderer, Message, NULL, &Message_rect); //you put the renderer's name first, the Message, the crop size, and the rect which is the size and coordinate of your texture
+	SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
+	//renderer's name, the Message, crop size, rect which is the size and coordinate of your texture
 	
 }
 
