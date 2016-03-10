@@ -173,13 +173,20 @@ void Game::update(double dt)
 	
 }
 
-Point Game::calcGrav(Particle& p1, const Particle& p2, const int i, const int j){
+Point Game::calcGrav(Particle& p1, Particle& p2, const int i, const int j){
 	Point pt1 = p1.getPos();
 	Point pt2 = p2.getPos();
 	
 	double r = pt1.distance(pt2);
-	if(r <= p1.getRadius() + p2.getRadius() + 1){
+	if(r <= p1.getRadius() + p2.getRadius()){
 		colliding[i][j] = true;
+		
+		double radiSum = p1.getRadius() + p2.getRadius();
+		double overlap = radiSum - r;
+		double angle = atan2(pt1.yDiff(pt2), pt1.xDiff(pt2));
+		p1.fixPos((overlap/2), angle);
+		p2.fixPos((overlap/2), angle);
+		
 		return Point(0, 0);
 	}else{
 		colliding[i][j] = false;
@@ -192,10 +199,10 @@ Point Game::calcGrav(Particle& p1, const Particle& p2, const int i, const int j)
 
 void Game::boundaryChk(Particle& p){
 	double r = p.getRadius();
-	if(p.getPos().getX() - r <= 1 || p.getPos().getX() + r >= width-1){
+	if(p.getPos().getX() - r <= 0 || p.getPos().getX() + r >= width){
 		p.negateVelocity('x');
 	}
-	if(p.getPos().getY() + r >= height-1 || p.getPos().getY() - r <= 1){
+	if(p.getPos().getY() + r >= height || p.getPos().getY() - r <= 0){
 		p.negateVelocity('y');
 	}
 }
@@ -238,7 +245,7 @@ void Game::render()
 	
 	// rendering here would place objects beneath the particles
 	
-	for (const Particle& p : particles)
+	for (Particle& p : particles)
 	{
 		drawParticle(p);
 	}
@@ -246,7 +253,9 @@ void Game::render()
 	// rendering here would place objects on top of the particles
 	if(showStats){
 		
-		printStats(getStats());
+		// printStats(getStats());
+		std::string test = "This is a test!";
+		printStats(test);
 	}
 	
 	SDL_RenderPresent(renderer);
@@ -272,7 +281,7 @@ void Game::handleEvent(const SDL_Event& event)
 	}
 }
 
-void Game::drawParticle(const Particle& p)
+void Game::drawParticle(Particle& p)
 {
 	SDL_Rect dst;
 	double shift = p.getRadius();
@@ -296,23 +305,31 @@ Particle Game::randomParticle() const
 void Game::printStats(std::string text){
 	
 	TTF_Font* font = TTF_OpenFont("arial.TTF", 12);
+	std::cout << "loaded font" << std::endl;
+	
 	SDL_Color White = { 255, 255, 255 };
+	std::cout << "set color" << std::endl;
 	
 	SDL_Surface* SurfaceMessage = TTF_RenderText_Solid(font, text.c_str(), White);
+	std::cout << "created Surface Message" << std::endl;
 	
 	SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, SurfaceMessage);
+	std::cout << "created texture" << std::endl;
 	
 	SDL_Rect Message_rect; //create a rect
 	Message_rect.w = 100; // controls the width of the rect
 	Message_rect.h = 100; // controls the height of the rect
 	Message_rect.x = 0; // DEFAULT_WIDTH - 100;  //controls the rect's x coordinate 
 	Message_rect.y = 0; // DEFAULT_HEIGHT + 100; // controls the rect's y coordinte
+	std::cout << "created rect" << std::endl;
 	
 	SDL_FreeSurface(SurfaceMessage);
 	
 	SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
 	//renderer's name, the Message, crop size, rect which is the size and coordinate of your texture
+	std::cout << "render copy" << std::endl;
 	
+	SDL_DestroyTexture(Message);
 }
 
 std::string Game::getStats(){

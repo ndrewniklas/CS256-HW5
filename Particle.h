@@ -18,7 +18,7 @@ private:
 	
 public:
 	Particle(Point pos, double mass);
-	Point getPos() const;
+	Point& getPos();
 	Point getVelocity() const;
 	double getMass() const;
 	double getRadius() const;
@@ -26,6 +26,7 @@ public:
 	void updateVelocity(Point accel, double time);
 	void updateVelocity(double x, double y);
 	void updatePos(double dt);
+	void fixPos(double overlap, double angle);
 	void negateVelocity(char component);
 	double velocityMagnitude() const;
 	double velocityAngle() const;

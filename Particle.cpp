@@ -17,7 +17,7 @@ double Particle::setRadius(){
 	return ((mass/MAX_MASS)*20 + 3);
 }
 
-Point Particle::getPos() const{
+Point& Particle::getPos(){
 	return position;
 }
 
@@ -34,8 +34,8 @@ double Particle::getRadius() const{
 }
 
 void Particle::updateVelocity(Point a, double dt){
-	velocity.x = velocity.x + a.x * dt;
-	velocity.y = velocity.y + a.y * dt;
+	velocity.x = velocity.x + (a.x * dt);
+	velocity.y = velocity.y + (a.y * dt);
 }
 
 void Particle::updateVelocity(double x, double y){
@@ -46,6 +46,11 @@ void Particle::updateVelocity(double x, double y){
 void Particle::updatePos(double dt){
 	position.x += velocity.x * dt;
 	position.y += velocity.y * dt;
+}
+
+void Particle::fixPos(double overlap, double angle){
+	position.x += overlap * cos(angle);
+	position.y += overlap * sin(angle);
 }
 
 void Particle::negateVelocity(char component){

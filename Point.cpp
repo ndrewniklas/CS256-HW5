@@ -43,22 +43,3 @@ double Point::distance(const Point& right) const{
 	double dy = yDiff(right);
 	return sqrt((dx * dx) + (dy * dy));
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

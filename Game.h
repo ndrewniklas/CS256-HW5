@@ -53,13 +53,13 @@ private:
 	void handleEvent(const SDL_Event& event);
 
 	// helper function for drawing particles to screen    
-	void drawParticle(const Particle& p);
+	void drawParticle(Particle& p);
 	
 	// helper function for generating random particles
 	Particle randomParticle() const;
 	
 	// helper function for calculating acceleration due to gravity
-	Point calcGrav(Particle& p1, const Particle& p2, const int i, const int j);
+	Point calcGrav(Particle& p1, Particle& p2, const int i, const int j);
 	
 	void boundaryChk(Particle& p);
 	bool colliding[PARTICLE_COUNT][PARTICLE_COUNT];
