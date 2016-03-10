@@ -41,10 +41,6 @@ void Particle::updateVelocity(Point a, double dt){
 void Particle::updateVelocity(double x, double y){
 	velocity.x = x;
 	velocity.y = y;
-	//if(velocityMagnitude() > 5e+4){
-	//	velocity.x = x / 1e+4;
-	//	velocity.y = y / 1e+4;
-	//}
 }
 
 void Particle::updatePos(double dt){
@@ -68,7 +64,14 @@ double Particle::velocityAngle() const{
 	return atan2(velocity.y, velocity.x);
 }
 
-
+void Particle::destroy(){
+	position.x = 1;
+	position.y = 1;
+	velocity.x = 0;
+	velocity.y = 0;
+	mass = 0;
+	radius = 0;
+}
 
 
 

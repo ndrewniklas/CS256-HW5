@@ -29,6 +29,8 @@ public:
 	void negateVelocity(char component);
 	double velocityMagnitude() const;
 	double velocityAngle() const;
+	
+	void destroy();
 };
 
 #endif

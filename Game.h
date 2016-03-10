@@ -65,7 +65,9 @@ private:
 	bool colliding[PARTICLE_COUNT][PARTICLE_COUNT];
 	void collideCalc(Particle& p1, Particle& p2);
 	
-	void stats() const;
+	
+	std::string getStats();
+	void printStats(std::string string);
 	
 public:
 	// This will act as our initialize function

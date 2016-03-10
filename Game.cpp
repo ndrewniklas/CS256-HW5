@@ -5,8 +5,9 @@
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include<SDL2/SDL_ttf.h>
 
-// #include "SDL_TTF.h"
+
 #include "Game.h"
 
 Game::Game() 
@@ -66,7 +67,7 @@ Game::Game()
 	}
 	
 	// initialize text printing
-	// TTF_Init();
+	TTF_Init();
 }
 
 Game::~Game()
@@ -87,7 +88,7 @@ Game::~Game()
 	{
 		SDL_DestroyWindow(window);
 	}
-	// TTF_Quit();
+	TTF_Quit();
 	
 	SDL_Quit();
 }
@@ -117,9 +118,11 @@ int Game::operator()()
 		render();
 		last = current;
 	}
+	runTime = (SDL_GetTicks() - start) / 1000.0;
 	std::cout << "\n\n  End of Game Statistics  " << std::endl;
 	std::cout << "Collisions: " << collisions << std::endl;
 	std::cout << "Max Velocity: " << maxVelocity << std::endl;
+	std::cout << "Run time: " << runTime << " seconds" << std::endl;
 
 	return 0;
 }
@@ -166,7 +169,6 @@ void Game::update(double dt)
 			maxVelocity = p.velocityMagnitude();
 		}
 		p.updatePos(dt);
-		std::cout << p.velocityMagnitude() << std::endl;
 	}
 	
 }
@@ -176,7 +178,7 @@ Point Game::calcGrav(Particle& p1, const Particle& p2, const int i, const int j)
 	Point pt2 = p2.getPos();
 	
 	double r = pt1.distance(pt2);
-	if(r <= p1.getRadius() + p2.getRadius()){
+	if(r <= p1.getRadius() + p2.getRadius() + 1){
 		colliding[i][j] = true;
 		return Point(0, 0);
 	}else{
@@ -190,10 +192,10 @@ Point Game::calcGrav(Particle& p1, const Particle& p2, const int i, const int j)
 
 void Game::boundaryChk(Particle& p){
 	double r = p.getRadius();
-	if(p.getPos().getX() - r <= 0 || p.getPos().getX() + r >= width){
+	if(p.getPos().getX() - r <= 1 || p.getPos().getX() + r >= width-1){
 		p.negateVelocity('x');
 	}
-	if(p.getPos().getY() + r >= height || p.getPos().getY() - r <= 0){
+	if(p.getPos().getY() + r >= height-1 || p.getPos().getY() - r <= 1){
 		p.negateVelocity('y');
 	}
 }
@@ -213,16 +215,16 @@ void Game::collideCalc(Particle& p1, Particle& p2){
 	// v1 calculations
 	double v1Sub = (v1 * cos(v1Angle - phi) * (m1 - m2) + (2 * m2 * v2 * cos(v2Angle - phi))) / (m1 + m2);
 	
-	double v1x = v1Sub * (cos(phi) + v1 * sin(v1Angle - phi) * cos(phi + PI/2));
+	double v1x = (v1Sub * cos(phi)) + (v1 * sin(v1Angle - phi) * cos(phi + PI/2));
 	
-	double v1y = v1Sub * (sin(phi) + v1 * sin(v1Angle - phi) * sin(phi + PI/2));
+	double v1y = (v1Sub * sin(phi)) + (v1 * sin(v1Angle - phi) * sin(phi + PI/2));
 	
 	// v2 calculations
 	double v2Sub = (v2 * cos(v2Angle - phi) * (m2 - m1) + (2 * m1 * v1 * cos(v1Angle - phi))) / (m1 + m2);
 	
-	double v2x = v2Sub * (cos(phi) + v2 * sin(v2Angle - phi) * cos(phi + PI/2));
+	double v2x = (v2Sub * cos(phi)) + (v2 * sin(v2Angle - phi) * cos(phi + PI/2));
 	
-	double v2y = v2Sub * (sin(phi) + v2 * sin(v2Angle - phi) * sin(phi + PI/2));
+	double v2y = (v2Sub * sin(phi)) + (v2 * sin(v2Angle - phi) * sin(phi + PI/2));
 	
 	// update velocities
 	p1.updateVelocity(v1x, v1y);
@@ -243,7 +245,7 @@ void Game::render()
 	// rendering here would place objects on top of the particles
 	// if(showStats){
 		
-		// printStats(renderer, getStats(), 0, 0);
+		printStats(getStats());
 	// }
 	
 	SDL_RenderPresent(renderer);
@@ -263,6 +265,7 @@ void Game::handleEvent(const SDL_Event& event)
 		}else if(event.key.keysym.sym == SDLK_s){
 			showStats = true;
 		}
+		break;
 	default:
 		break;
 	}
@@ -289,29 +292,41 @@ Particle Game::randomParticle() const
 	return Particle(pos, mass);
 }
 
-// void Game::printStats(SDL_Surface* screen, char* string, int x, int y){
+void Game::printStats(std::string text){
 	
-	// TTF_Font* font = TTF_OpenFont("arial.TTF", 12);
-	// SDL_Color foregroundColor = { 255, 255, 255 };
-	// SDL_Color backgroundColor = { 0, 0, 0 };
-	// SDL_Surface* textSurface = TTF_RenderText_Shaded(font, string, foregroundColor, backgroundColor);
-	// SDL_Rect textLocation = { x, y, 0, 0 };
-	// SDL_BlitSurface(textSurface, NULL, screen, &textLocation);
+	TTF_Font* font = TTF_OpenFont("arial.TTF", 12);
+	SDL_Color White = { 255, 255, 255 };
 	
-	// SDL_FreeSurface(textSurface);
-	// TTF_CloseFont(font);
-// }
+	SDL_Surface* SurfaceMessage = TTF_RenderText_Solid(font, text.c_str(), White);
 
-// char* Game::getStats(){
-	// std::stringstream ss;
-	// ss << "  Statistics  \n";
-	// ss << "Collisions: " << collisions << "\n";
-	// ss << "Run Time: " << SDL_GetTicks() << "\n";
-	// ss << "\0";
-	// char* string;
-	// ss.get(string, 500, "\0");
-	// return string;
-// }
+	SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, SurfaceMessage); //now you can convert it into a texture
+
+	SDL_Rect Message_rect; //create a rect
+	Message_rect.w = 100; // controls the width of the rect
+	Message_rect.h = 100; // controls the height of the rect
+	Message_rect.x = DEFAULT_WIDTH - 100;  //controls the rect's x coordinate 
+	Message_rect.y = DEFAULT_HEIGHT + 100; // controls the rect's y coordinte
+	
+	SDL_FreeSurface(SurfaceMessage);
+	
+	SDL_RenderCopy(renderer, Message, NULL, &Message_rect); //you put the renderer's name first, the Message, the crop size, and the rect which is the size and coordinate of your texture
+	
+}
+
+std::string Game::getStats(){
+	std::string statsText;
+	
+	runTime = (SDL_GetTicks() - start) / 1000.0;
+	statsText.append("  Game Statistics  \nCollisions: ");
+	statsText.append(std::to_string(collisions));
+	statsText.append("\nMax Velocity: ");
+	statsText.append(std::to_string(maxVelocity));
+	statsText.append("\nRun time: ");
+	statsText.append(std::to_string(runTime));
+	statsText.append(" seconds");
+	
+	return statsText;	
+}
 
 
 
