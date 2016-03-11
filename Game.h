@@ -6,7 +6,6 @@
 #define	GAME_H
 
 #include <SDL2/SDL.h>
-#include<SDL2/SDL_ttf.h>
 #include <string>
 #include <iostream>
 #include <vector>
@@ -65,11 +64,6 @@ private:
 	void boundaryChk(Particle& p);
 	bool colliding[PARTICLE_COUNT][PARTICLE_COUNT];
 	void collideCalc(Particle& p1, Particle& p2);
-	
-	TTF_Font* font;
-	SDL_Color textColor;
-	std::string getStats();
-	void printStats(std::string string);
 	
 public:
 	// This will act as our initialize function

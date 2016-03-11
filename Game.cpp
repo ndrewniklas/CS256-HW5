@@ -5,7 +5,6 @@
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
-#include<SDL2/SDL_ttf.h>
 
 
 #include "Game.h"
@@ -66,14 +65,6 @@ Game::Game()
 		particles.push_back(randomParticle());
 	}
 	
-	// initialize text printing
-	if(!TTF_Init()){
-		std::cout << "TTF_Init() Failed" << std::endl;
-		std::cout << "SDL Error: " << SDL_GetError() << std::endl;
-		good = false;
-	}
-	TTF_Font* font = TTF_OpenFont("arial.ttf", 12);
-	SDL_Color textColor = { 255, 255, 255 };
 }
 
 Game::~Game()
@@ -94,11 +85,6 @@ Game::~Game()
 	{
 		SDL_DestroyWindow(window);
 	}
-	if (font != NULL){
-		TTF_CloseFont(font);
-		font = NULL;
-	}
-	TTF_Quit();
 	
 	SDL_Quit();
 }
@@ -275,12 +261,6 @@ void Game::render()
 	}
 	
 	// rendering here would place objects on top of the particles
-	if(showStats){
-		
-		// printStats(getStats());
-		std::string test = "This is a test!";
-		printStats(test);
-	}
 	
 	SDL_RenderPresent(renderer);
 }
@@ -296,8 +276,6 @@ void Game::handleEvent(const SDL_Event& event)
 	case SDL_KEYUP:
 		if(event.key.keysym.sym == SDLK_ESCAPE){
 			running = false;
-		}else if(event.key.keysym.sym == SDLK_s){
-			showStats = true;
 		}
 		break;
 	default:
@@ -325,56 +303,3 @@ Particle Game::randomParticle() const
 	
 	return Particle(pos, mass);
 }
-
-void Game::printStats(std::string text){
-	
-	std::cout << "loaded font" << std::endl;
-	std::cout << (font == NULL ? "null" : "not null") << std::endl;
-	
-	// SDL_Color White = { 255, 255, 255 };
-	std::cout << "set color" << std::endl;
-	
-	SDL_Surface* textSurface; 
-	if(!(textSurface = TTF_RenderText_Solid(font, "text.c_str()", textColor))){
-		std::cout << "TTF_RenderText_Solid failed" << std::endl;
-		std::cout << TTF_GetError() << std::endl;
-	}
-	std::cout << "created Surface Message" << std::endl;
-	
-	SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, textSurface);
-	std::cout << "created texture" << std::endl;
-	
-	SDL_Rect Message_rect; //create a rect
-	Message_rect.w = 100; // controls the width of the rect
-	Message_rect.h = 100; // controls the height of the rect
-	Message_rect.x = 0; // DEFAULT_WIDTH - 100;  //controls the rect's x coordinate 
-	Message_rect.y = 0; // DEFAULT_HEIGHT + 100; // controls the rect's y coordinte
-	std::cout << "created rect" << std::endl;
-	
-	SDL_FreeSurface(textSurface);
-	
-	SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
-	//renderer's name, the Message, crop size, rect which is the size and coordinate of your texture
-	std::cout << "render copy" << std::endl;
-
-	// SDL_DestroyTexture(Message);
-}
-
-std::string Game::getStats(){
-	std::string statsText;
-	
-	runTime = (SDL_GetTicks() - start) / 1000.0;
-	statsText.append("  Game Statistics  \nCollisions: ");
-	statsText.append(std::to_string(collisions));
-	statsText.append("\nMax Velocity: ");
-	statsText.append(std::to_string(maxVelocity));
-	statsText.append("\nRun time: ");
-	statsText.append(std::to_string(runTime));
-	statsText.append(" seconds");
-	
-	return statsText;	
-}
-
-
-
-

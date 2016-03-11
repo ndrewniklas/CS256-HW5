@@ -77,18 +77,3 @@ void Particle::destroy(){
 	mass = 0;
 	radius = 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
